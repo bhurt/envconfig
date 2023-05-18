@@ -36,12 +36,24 @@
 -- that has the right type.  For example, we could just directly read
 -- files on the filesystem, eliminating the need for envdir altogether.  
 -- Or we could query some table in a database.
+--
 module Config.Env (
     Config,
     VarName,
-    Variable(..)
+    Variable(..),
+    label,
+    readVar,
+    readVarOpt,
+    readVarDef,
+    stringVar,
+    stringVarOpt,
+    stringVarDef,
+    parseVar,
+    parseVarOpt,
+    parseVarDef,
+    varExists
 ) where
 
-    import           Config.Env.Internal.Config as Reexport (Config, VarName,
-                                                             Variable (..))
+    import           Config.Env.Internal.Config
+    import           Config.Env.Internal.Parsers
 

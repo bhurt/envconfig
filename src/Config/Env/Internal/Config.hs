@@ -170,6 +170,10 @@ module Config.Env.Internal.Config (
     -- @
     --
     data Config a where
+        -- The reason we use a GADT here is to let us capture some
+        -- typeclass constraints.
+
+
         -- | A label node.
         --
         -- Label nodes wrap a Config with a description tag, and optionally
@@ -207,9 +211,14 @@ module Config.Env.Internal.Config (
         --
         -- If the variable does not exist, return the default value.
         -- If the variable can not be parsed, fail.
+        --
+        -- The reason this exists, rather than just doing the obvious
+        -- fmap over CParseOpt, is so that the documentation can show
+        -- the default value.  This, of course, requires a Show
+        -- constraint
         CParseDef  :: (Typeable a, Show a)
-                        => ParseInfo a      -- ^ parse info
-                        -> a                -- ^ default value
+                        => a                -- ^ default value
+                        -> ParseInfo a      -- ^ parse info
                         -> Config a
 
         -- | Map the result value of a Config.
