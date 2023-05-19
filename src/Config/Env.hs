@@ -38,20 +38,154 @@
 -- Or we could query some table in a database.
 --
 module Config.Env (
+
+    -- * Main Types
+    --
+    -- | A @Config a@ represents a program that creates a configuration
+    -- value of type @a@.
+    --
+    -- A Config program can read variables using one of the parsing
+    -- functions, for example `readVar` or `stringVar`, etc.
+    --
+    -- Config implements Applicative, so you can use the standard
+    -- pattern to construct records, like:
+    --
+    -- @
+    --  data Foo = Foo {
+    --                  foo :: String,
+    --                  bar :: Int }
+    --
+    --  parseFoo :: Config Foo
+    --  parseFoo = Foo
+    --              <$> stringVar "MyFoo"
+    --              <*> readVar "MyBar"
+    -- @
+    --
+    -- Config implements Alternative, so variant types can be parsed
+    -- like:
+    --
+    -- @
+    --  data Quux = Yakko Foo
+    --              | Wakko Int
+    --              | Dot
+    --
+    --  parseQuux :: Config Quux
+    --  parseQuux =
+    --      (Yakko <$> parseFoo)
+    --      <|> (Wakko <$> readVar "HelloNurse")
+    --      <|> pure Dot
+    -- @
+    --
+    -- Config does not implement Monad, as we need to be able to traverse
+    -- the program and find all the variables that might be read to
+    -- generate the help text.  As a compromise, we implement the
+    -- Selective type class, which lets us choose how to create the
+    -- configuation value.  For example, we might write:
+    --
+    -- @
+    --  import Control.Selective (ifS)
+    --
+    --  parseWhatever :: Config Whatever
+    --  parseWhatever = ifS (existsVar "WhichWhatever") onTrue onFalse
+    --      where
+    --          -- Executed when the WhichWhatever variable is set.
+    --          onTrue :: Config Whatever
+    --          onTrue = ...
+    --
+    --          -- Execute when the WhichWhatever variable is not set.
+    --          onFalse = ...
+    -- @
+    --
     Config,
     VarName,
     Variable(..),
-    label,
+
+    -- * Reading Variables
+    --
+    -- | One might wonder why we don't define some type class like:
+    --
+    -- @
+    --  class Parserable a where
+    --      parse :: Variable -> Config a
+    --
+    --  instance Read a => Parserable a where
+    --      parse = ...
+    -- @
+    --
+    -- The problem with this is strings.  The read implementation for
+    -- strings (including texts and bytestrings) requires the string
+    -- be quoted and escaped.  So you can't just do:
+    --
+    -- @
+    --      FOO="whatever"
+    -- @
+    --
+    -- you have to do:
+    --
+    -- @
+    --      FOO="\"whatever\""
+    -- @
+    --
+    -- Which is annoying, to say the least.  We want to use the fromString
+    -- implementation of the IsString typeclass to convert strings.  But
+    -- if we then do:
+    --
+    -- @
+    --      instance IsString a => Parseable a where
+    --          parse = ...
+    -- @
+    --
+    -- This leads us into overlapping isntances hell.  And right quick
+    -- too, as String implements both Read and IsString.  We can't
+    -- ditch the Read interface, because we still need it for types
+    -- like Int.  And once we add the FromJSON option to parse
+    -- environment variables, life becomes even more difficult.
+    --
+    -- The solution is to just have different functions that explicitly
+    -- encode which typeclass they use to decode the variable.
+    --
+    -- ** Required Variables
+    --
+    -- | These functions fail if the variable does not exist.
+    --
     readVar,
-    readVarOpt,
-    readVarDef,
     stringVar,
+    jsonVar,
+
+    -- ** Optional Variables
+    --
+    -- | These functions return Nothing if the variable does not exist.
+    --
+    -- Note that they can still fail, if the variable can not be parsed.
+    --
+    readVarOpt,
     stringVarOpt,
+    jsonVarOpt,
+
+    -- ** Optional Variables With Defaults
+    --
+    -- | These functions return a default value if the variable does not
+    -- exist.
+    --
+    -- The type being parsed needs to implement the Show typeclass, so
+    -- documentation can print the default value.
+    --
+    -- Note that they can still fail, if the variable can not be parsed.
+    --
+    readVarDef,
     stringVarDef,
+    jsonVarDef,
+
+    -- ** Testing Variable Existence
+    varExists,
+
+    -- ** Low-level Functions
     parseVar,
     parseVarOpt,
     parseVarDef,
-    varExists
+
+    -- * Constructing Configs
+    label
 ) where
 
     import           Config.Env.Internal.Config
