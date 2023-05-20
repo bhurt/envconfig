@@ -23,9 +23,10 @@ Flag Devel
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Config.Env,
-                        Config.Env.Internal.Config,
-                        Config.Env.Internal.Parsers
+  exposed-modules:     Config.Env
+                        , Config.Env.Internal.Config
+                        , Config.Env.Internal.Doc
+                        , Config.Env.Internal.Parsers
   build-depends:       base >= 4.7 && < 5
                         , aeson
                         , blaze-html

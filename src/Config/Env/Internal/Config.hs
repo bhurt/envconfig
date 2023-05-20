@@ -226,18 +226,32 @@ module Config.Env.Internal.Config (
 
     instance Functor Config where
         fmap f (CMap g c) = CMap (f . g) c
+        fmap _ CEmpty     = CEmpty
+        fmap f (CPure x)  = CPure (f x)
         fmap f c          = CMap f c
 
     instance Applicative Config where
         pure = CPure
-        (<*>) = CApp
+        CEmpty  <*> _       = CEmpty
+        _       <*> CEmpty  = CEmpty
+        CPure f <*> x       = fmap f x
+        f       <*> CPure x = fmap ($ x) f
+        x       <*> y       = CApp x y
 
     instance Alternative Config where
         empty = CEmpty
-        (<|>) = CAlt
+        CEmpty      <|> y      = y
+        x           <|> CEmpty = x
+        x@(CPure _) <|> _      = x
+        x           <|> y      = CAlt x y
 
     instance Selective Config where
-        select = CSel
+        select CEmpty    _ = CEmpty
+        select (CPure x) y =
+            case x of
+                Left a  -> fmap ($ a) y
+                Right b -> CPure b
+        select x         y = CSel x y
 
     instance Semigroup a => Semigroup (Config a) where
         x <> y = (<>) <$> x <*> y
