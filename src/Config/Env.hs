@@ -186,6 +186,7 @@ module Config.Env (
     runConfig,
     runConfigDir,
     helpConfig,
+    generateWebPage,
 
     -- * Low-level Functions
     --
@@ -205,6 +206,7 @@ module Config.Env (
 ) where
 
     import           Config.Env.Internal.Config
+    import           Config.Env.Internal.Doc
     import           Config.Env.Internal.Parsers
     import           Config.Env.Internal.Run
 

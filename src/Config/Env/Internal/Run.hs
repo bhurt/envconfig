@@ -79,7 +79,7 @@ module Config.Env.Internal.Run (
             go (CParse pinfo) =
                 let makeErr :: String -> Either Doc x
                     makeErr err = Left $
-                                    parseVar True pinfo
+                                    parseVarDoc True pinfo
                                         [ ("Error:", fromString err) ]
 
                     fixup :: ReadResult x -> Either Doc x
@@ -92,7 +92,7 @@ module Config.Env.Internal.Run (
                 let fixup :: forall y . ReadResult y -> Either Doc (Maybe y)
                     fixup NotFound        = Right Nothing
                     fixup (ReadError err) =
-                        Left $ parseVar False pinfo
+                        Left $ parseVarDoc False pinfo
                                 [ ("Error:", fromString err) ]
                     fixup (Contents x)    = Right $ Just x
                 in
@@ -101,7 +101,7 @@ module Config.Env.Internal.Run (
                 let fixup :: ReadResult x -> Either Doc x
                     fixup NotFound        = Right def
                     fixup (ReadError err) =
-                        Left $ parseVar False pinfo
+                        Left $ parseVarDoc False pinfo
                                 [   ("Default:", fromString (show def)),
                                     ("Error:", fromString err) ]
                     fixup (Contents x)    = Right x
@@ -251,10 +251,10 @@ module Config.Env.Internal.Run (
         where
             loop :: Config a -> Doc
             loop (CLabel summ desc cfg) = labelDoc summ desc (loop cfg)
-            loop (CParse pinfo) = parseVar True pinfo []
-            loop (CParseOpt pinfo) = parseVar False pinfo []
+            loop (CParse pinfo) = parseVarDoc True pinfo []
+            loop (CParseOpt pinfo) = parseVarDoc False pinfo []
             loop (CParseDef a pinfo) =
-                parseVar False pinfo [ ("Default:", fromString (show a)) ]
+                parseVarDoc False pinfo [ ("Default:", fromString (show a)) ]
             loop (CMap _ cfg) = loop cfg
             loop (CPure _)    = pureVal
             loop (CApp c1 c2) = andDoc (loop c1) (loop c2)

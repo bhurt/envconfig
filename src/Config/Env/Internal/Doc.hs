@@ -19,7 +19,7 @@
 module Config.Env.Internal.Doc(
     Doc,
     labelDoc,
-    parseVar,
+    parseVarDoc,
     pureVal,
     failVal,
     andDoc,
@@ -81,14 +81,15 @@ module Config.Env.Internal.Doc(
     -- we allow adding extra fields on the end.  This lets us deal
     -- with default values, and possibly adding error messages, in
     -- a sane way.
-    parseVar :: forall a .  Typeable a
-                => Bool             -- ^ Is the variable required?
-                                    --
-                                    -- (False if the variable is optional)
-                -> ParseInfo a      -- ^ Variable information
-                -> [ (Html, Html) ] -- ^ Extra fields to add.
-                -> Doc
-    parseVar isReq pinfo xtras = DocVar htmlName $ genTable allRows
+    parseVarDoc ::
+        forall a .  Typeable a
+        => Bool             -- ^ Is the variable required?
+                            --
+                            -- (False if the variable is optional)
+        -> ParseInfo a      -- ^ Variable information
+        -> [ (Html, Html) ] -- ^ Extra fields to add.
+        -> Doc
+    parseVarDoc isReq pinfo xtras = DocVar htmlName $ genTable allRows
         where
             vari :: Variable
             vari = envVar pinfo
