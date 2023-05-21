@@ -179,15 +179,32 @@ module Config.Env (
     -- ** Testing Variable Existence
     varExists,
 
-    -- ** Low-level Functions
+    -- * Labelling Configs
+    label,
+
+    -- * Running Configs
+    runConfig,
+    runConfigDir,
+    helpConfig,
+
+    -- * Low-level Functions
+    --
+    -- | These are functions which are exported to allow extending this
+    -- library.  In normal use, you probably do not need them.
+    
+    -- ** Low-level Parsers
     parseVar,
     parseVarOpt,
     parseVarDef,
 
-    -- * Constructing Configs
-    label
+    -- ** Low-level Runners
+    runConfigDirBase,
+    runConfigBase,
+    ReadResult(..)
+
 ) where
 
     import           Config.Env.Internal.Config
     import           Config.Env.Internal.Parsers
+    import           Config.Env.Internal.Run
 

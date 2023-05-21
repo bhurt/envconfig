@@ -27,6 +27,7 @@ library
                         , Config.Env.Internal.Config
                         , Config.Env.Internal.Doc
                         , Config.Env.Internal.Parsers
+                        , Config.Env.Internal.Run
   build-depends:       base >= 4.7 && < 5
                         , aeson
                         , blaze-html
