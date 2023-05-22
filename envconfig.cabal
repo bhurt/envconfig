@@ -26,10 +26,12 @@ library
   exposed-modules:     Config.Env
                         , Config.Env.Internal.Config
                         , Config.Env.Internal.Doc
+                        , Config.Env.Internal.Examples
                         , Config.Env.Internal.Parsers
                         , Config.Env.Internal.Run
   build-depends:       base >= 4.7 && < 5
                         , aeson
+                        , aeson-pretty
                         , blaze-html
                         , bytestring
                         , directory

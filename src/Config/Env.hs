@@ -156,6 +156,9 @@ module Config.Env (
     --
     -- | These functions return Nothing if the variable does not exist.
     --
+    -- They are the equivalent of @optional readVar@ etc., except that
+    -- they produce better documentation.
+    --
     -- Note that they can still fail, if the variable can not be parsed.
     --
     readVarOpt,
@@ -169,6 +172,9 @@ module Config.Env (
     --
     -- The type being parsed needs to implement the Show typeclass, so
     -- documentation can print the default value.
+    --
+    -- They are the equivalent of @readVar \<|\> pure def@, except that
+    -- they produce better documentation.
     --
     -- Note that they can still fail, if the variable can not be parsed.
     --
@@ -187,6 +193,13 @@ module Config.Env (
     runConfigDir,
     helpConfig,
     generateWebPage,
+
+    -- * Examples
+    --
+    -- | Helper functions for creating documentation.
+    --
+    example,
+    jsonExample,
 
     -- * Low-level Functions
     --
@@ -207,6 +220,7 @@ module Config.Env (
 
     import           Config.Env.Internal.Config
     import           Config.Env.Internal.Doc
+    import           Config.Env.Internal.Examples
     import           Config.Env.Internal.Parsers
     import           Config.Env.Internal.Run
 
