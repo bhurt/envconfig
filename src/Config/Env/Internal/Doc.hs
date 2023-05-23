@@ -222,11 +222,11 @@ module Config.Env.Internal.Doc(
     generateDoc (DocAnd (x :| xs))    = 
         addRequirements $
             generateLabeled Nothing x
-            <> foldMap (generateLabeled (Just "AND")) xs
+            <> foldMap (generateLabeled (Just "and")) xs
     generateDoc (DocOr  (x :| xs))    =
         addRequirements $
             generateLabeled Nothing x
-            <> foldMap (generateLabeled (Just "OR")) xs
+            <> foldMap (generateLabeled (Just "or")) xs
     generateDoc (DocSel body)         = addRequirements body
     
 
